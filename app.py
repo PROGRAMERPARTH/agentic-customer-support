@@ -134,6 +134,30 @@ with feature_2:
 with feature_3:
     st.markdown('<div class="feature-card"><strong>💳 Refunds</strong><span>Understand the refund amount and policy.</span></div>', unsafe_allow_html=True)
 
+with st.expander("What can I ask the assistant?", expanded=False):
+    st.markdown(
+        """
+        The assistant works with **two predefined demo orders**. It can help with:
+
+        - **Order status:** “What is the status of order 12345?”
+        - **Return eligibility:** “Can I return order 12345 because it is damaged?”
+        - **Refund estimates:** “What refund would I get for order 12345 if I changed my mind?”
+        - **Start a return:** “Start a return for order 12345 because it is defective.”
+        - **Store policies:** “What is your return policy?” or “When will I receive my refund?”
+        """
+    )
+
+    st.markdown("##### Predefined order data")
+    st.dataframe(
+        [
+            {"Order ID": "12345", "Items": "item1, item2", "Total": "$100.00", "Status": "Shipped"},
+            {"Order ID": "12346", "Items": "item3, item4", "Total": "$200.00", "Status": "Processing"},
+        ],
+        hide_index=True,
+        use_container_width=True,
+    )
+    st.caption("These are simulated records for demonstration only. The assistant cannot access real customer orders.")
+
 st.markdown("#### Conversation")
 
 api_key = get_gemini_api_key()
