@@ -196,7 +196,7 @@ tools=[
 # Createing A Agent State 
 
 # %%
-from typing import Any 
+from typing import Any
 from typing_extensions import  NotRequired, TypedDict
 from langchain_core.messages import BaseMessage, AIMessage, HumanMessage, SystemMessage
 
@@ -296,7 +296,34 @@ def execute_tool(tool_name:str,tool_args: dict) -> dict :
 # Final Responder
 
 # %%
-from langchain_core.messages import HumanMessage,SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
+
+
+def message_to_text(content: Any) -> str:
+    """Extract displayable text from Gemini/LangChain message content.
+
+    Gemini may return a plain string or a list of content blocks. Rendering the
+    latter directly in Streamlit exposes the Python dictionary representation
+    (including provider metadata such as a signature) instead of the answer.
+    """
+    if isinstance(content, str):
+        return content.strip()
+
+    if isinstance(content, list):
+        parts: list[str] = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict) and isinstance(block.get("text"), str):
+                parts.append(block["text"])
+            elif hasattr(block, "text") and isinstance(block.text, str):
+                parts.append(block.text)
+        return "\n".join(part.strip() for part in parts if part.strip())
+
+    if isinstance(content, dict) and isinstance(content.get("text"), str):
+        return content["text"].strip()
+
+    return str(content).strip()
 def generate_final_Answer(query:str,tools_results: list[dict])-> str:
     """Generate A Final Answer Based On Query And Tool Results """
     evidence=[]
@@ -320,7 +347,8 @@ def generate_final_Answer(query:str,tools_results: list[dict])-> str:
                               f"Sources: {sources}"
         
         )),])
-    return response.content
+    answer = message_to_text(response.content)
+    return answer or "I couldn't generate a response from the available information."
 
 # %% [markdown]
 # Connect Everything with Langraph
@@ -339,7 +367,9 @@ Previous tool results: {state["tools_results"]}
 Available tools: {", ".join(TOOL_NAMES)}
 
 Select a tool if more information is needed, or choose final_response when
-the available information is sufficient.
+the available information is sufficient. Use at most one tool for a request
+unless the previous tool result clearly says more information is required.
+After receiving a useful tool result, choose final_response.
 """)
 
     return {
