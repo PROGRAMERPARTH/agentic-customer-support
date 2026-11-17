@@ -1,0 +1,13 @@
+# Secrets and local Streamlit configuration
+.env
+.streamlit/secrets.toml
+
+# Python build and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/

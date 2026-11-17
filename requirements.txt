@@ -1,0 +1,7 @@
+streamlit>=1.40,<2
+langchain>=0.3,<2
+langchain-core>=0.3,<2
+langchain-google-genai>=2,<4
+langgraph>=0.2,<2
+pydantic>=2,<3
+python-dotenv>=1,<2
